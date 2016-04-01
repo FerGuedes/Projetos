@@ -1,0 +1,145 @@
+---
+title: "Aplicação"
+author: "Adauto Pereira de Almeida"
+date: "28 de outubro de 2015"
+output: word_document
+---
+
+Iremos usar o modelo de regressão logistico multiplo para analisar dados de pacientes adultos que foram admitidos na UTI (Unidade de Tratamento intensivo).
+Os dados consistem em 200 pacientes que frequentaram a UTI, queremos estudar os fatores que influenciam na sobrevivência ou não dos pacientes, o objetivo principal do estudo é desenvolver um modelo de regressão logistica para predizer a probabilidade de um paciente que entra na UTI sobreviver.
+Iremos utilizar o método Backward para seleção das variáveis, ou seja começaremos com o modelo completo e retiraremos as variáveis que forem menos significativas, ou seja as que tenham maior p.valor, depois de retirada a primeira, faremos o modelo sem ela, e retiramos novamente a menos significativa até que todas as variáveis no modelo sejam significativas a um $\alpha=0.05$.
+
+Abaixo a tabela com todas as variáveis que foram retiradas do modelo e seus respectivo p.valores.
+
+```{r,echo=FALSE,EVAL=TRUE}
+
+icu <- read.table("C:/Users/adauto.IME.004/Desktop/icu.dat", quote="\"", comment.char="")
+DadosICU<- icu
+colnames(DadosICU)<-c("ID","STA","AGE","SEX","RACE","SER","CAN","CRN","INF","CPR","SYS","HRA","PRE","TYP","FRA","PO2","PH","PCO","BIC","CRE","LOC")
+modelo = glm(STA~AGE+SEX+RACE+SER+CAN+CRN+INF+CPR+SYS+HRA+PRE+TYP+FRA+PO2+PH+PCO+BIC+CRE+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+
+```
+
+
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo1 = glm(STA~AGE+SEX+SER+CAN+CRN+INF+CPR+SYS+HRA+PRE+TYP+FRA+PO2+PH+PCO+BIC+CRE+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+
+```
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo2 = glm(STA~AGE+SEX+SER+CAN+CRN+CPR+SYS+HRA+PRE+TYP+FRA+PO2+PH+PCO+BIC+CRE+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+
+```
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo3 = glm(STA~AGE+SEX+SER+CAN+CPR+SYS+HRA+PRE+TYP+FRA+PO2+PH+PCO+BIC+CRE+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+
+```
+
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo4 = glm(STA~AGE+SEX+SER+CAN+CPR+SYS+HRA+PRE+TYP+FRA+PO2+PH+PCO+BIC+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+```
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo5 = glm(STA~AGE+SEX+SER+CAN+CPR+SYS+PRE+TYP+FRA+PO2+PH+PCO+BIC+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+```
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo6 = glm(STA~AGE+SEX+SER+CAN+CPR+SYS+PRE+TYP+FRA+PH+PCO+BIC+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+```
+
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo7 = glm(STA~AGE+SEX+SER+CAN+CPR+SYS+PRE+TYP+FRA+PH+PCO+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+```
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo8 = glm(STA~AGE+SEX+CAN+CPR+SYS+PRE+TYP+FRA+PH+PCO+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+```
+
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo9 = glm(STA~AGE+SEX+CAN+CPR+SYS+PRE+TYP+PH+PCO+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+```
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo10 = glm(STA~AGE+SEX+CAN+SYS+PRE+TYP+PH+PCO+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+```
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo11 = glm(STA~AGE+CAN+SYS+PRE+TYP+PH+PCO+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+```
+
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelo12 = glm(STA~AGE+CAN+SYS+TYP+PH+PCO+LOC , data = DadosICU, family = binomial(link = 'logit'))
+
+```
+
+
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+P.valor<- matrix(NA,13,1)
+data <- data.frame(P.valor,row.names = c('RACE','INF','CRN','CRE','HRA','PO2','BIC','SER','FRA','CPR','SEX','PRE','SYS'))
+
+data$P.valor[1] <- round(coef(summary(modelo))[4,4],3) 
+data$P.valor[2] <- round(coef(summary(modelo1))[7,4],3) 
+data$P.valor[3] <- round(coef(summary(modelo2))[6,4],3) 
+data$P.valor[4] <- round(coef(summary(modelo3))[16,4],3) 
+data$P.valor[5] <- round(coef(summary(modelo4))[8,4],3) 
+data$P.valor[6] <- round(coef(summary(modelo5))[11,4],3) 
+data$P.valor[7] <- round(coef(summary(modelo6))[13,4],3) 
+data$P.valor[8] <- round(coef(summary(modelo7))[4,4],3) 
+data$P.valor[9] <- round(coef(summary(modelo8))[9,4],3) 
+data$P.valor[10] <- round(coef(summary(modelo9))[5,4],3)
+data$P.valor[11] <- round(coef(summary(modelo10))[3,4],3)
+data$P.valor[12] <- round(coef(summary(modelo11))[5,4],3)
+data$P.valor[13] <- round(coef(summary(modelo12))[4,4],3)
+data
+```
+Depois de retirado as variáveis acima que não são significativas, restou 6 variáveis
+AGE=Idade \
+
+
+
+```{r,echo=FALSE,EVAL=TRUE}
+modelofinal = glm(STA~AGE+CAN+TYP+PH+PCO+LOC , data = DadosICU, family = binomial(link = 'logit'))
+summary(modelofinal)
+```
+
+
+
+
+assim o modelo final ficou:
+$\pi(x)=-6.75128+0.04018AGE+2.14668CAN+2.81592TYP+1.76830PH-2.13254PCO+2.30890LOC$
+
+
+
+
+
+
